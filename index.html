@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Backend thực chiến: 10 khái niệm đáng học sớm</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#F2F5F7;--surface:#FFFFFF;--ink:#13202B;--muted:#4F6272;--line:#D3DCE3;--accent:#0B7A85;--accent-soft:#D8EEF0;--on-accent:#FFFFFF;
+--warn:#A86C00;--warn-soft:#FBEFD2;--bad:#C0392B;--bad-soft:#F9DEDA;--good:#2B7A4B;--good-soft:#DAF0E3;--indigo:#3F51B5;--code-bg:#0F1D27;--code-ink:#D8E6EE}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C161D;--surface:#13222C;--ink:#E4EDF2;--muted:#9BADBA;--line:#263845;--accent:#4CC3CE;--accent-soft:#12383D;--on-accent:#08222A;--warn:#E3B23C;--warn-soft:#3A2F10;--bad:#F07A6C;--bad-soft:#40201C;--good:#5BC084;--good-soft:#163526;--indigo:#9DAAFF;--code-bg:#08121A;--code-ink:#D8E6EE}}
+:root[data-theme="dark"]{--bg:#0C161D;--surface:#13222C;--ink:#E4EDF2;--muted:#9BADBA;--line:#263845;--accent:#4CC3CE;--accent-soft:#12383D;--on-accent:#08222A;--warn:#E3B23C;--warn-soft:#3A2F10;--bad:#F07A6C;--bad-soft:#40201C;--good:#5BC084;--good-soft:#163526;--indigo:#9DAAFF;--code-bg:#08121A;--code-ink:#D8E6EE}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-text-size-adjust:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+a{color:var(--accent)}
+code{font:.88em 'JetBrains Mono',ui-monospace,Consolas,monospace;background:var(--accent-soft);padding:1px 6px;border-radius:5px}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+.nav a{white-space:nowrap;padding:5px 11px;border-radius:999px;font-size:13.5px;color:var(--muted);text-decoration:none;border:1px solid transparent}
+.nav a:hover{color:var(--ink);border-color:var(--line)}
+.hero{padding:48px 0 26px}
+.hero h1{font-size:clamp(30px,6vw,52px);line-height:1.1;letter-spacing:-.02em;margin:0 0 14px;max-width:18ch}
+.hero p.sub{font-size:18px;color:var(--muted);max-width:62ch;margin:0 0 22px}
+.steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 34px}
+.steps3 div{border-left:3px solid var(--accent);padding:2px 0 2px 12px;font-size:14.5px}
+.steps3 b{display:block;font-size:15px}
+.scroll{overflow-x:auto}
+.lad{width:100%;min-width:660px;border-collapse:separate;border-spacing:0 4px;font-size:14.5px}
+.lad th{font-weight:600;text-align:left;padding:6px 10px;color:var(--muted);font-size:13.5px}
+.lad td{padding:9px 10px;background:var(--surface)}
+.lad td:first-child{border-radius:9px 0 0 9px;font-weight:600}
+.lad td:last-child{border-radius:0 9px 9px 0;color:var(--muted)}
+.lad tr.g th{padding-top:16px;color:var(--ink);font-size:14px}
+.lad td a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)}
+.lad .d1{background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.lad .d2{background:color-mix(in srgb,var(--accent) 24%,var(--surface))}
+.lad .d3{background:color-mix(in srgb,var(--accent) 42%,var(--surface))}
+.lad .d0{color:var(--muted)}
+.pips i{display:inline-block;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--accent);margin-right:3px;vertical-align:-1px}
+.d1 .pips i:nth-child(-n+1),.d2 .pips i:nth-child(-n+2),.d3 .pips i{background:var(--accent)}
+.legend{font-size:14px;color:var(--muted);margin:10px 0 0}
+.why3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin:30px 0 8px}
+.why3 h3{margin:0 0 4px;font-size:17px}
+.why3 p{margin:0;font-size:15px;color:var(--muted)}
+.sec{padding:52px 0 6px;border-top:1px solid var(--line);margin-top:40px}
+.sec h2{font-size:clamp(23px,4vw,31px);line-height:1.25;margin:0 0 10px;letter-spacing:-.01em;display:flex;gap:14px;align-items:flex-start}
+.num{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:17px;font-weight:700}
+.lead{font-size:17px;color:var(--muted);max-width:68ch;margin:0 0 6px}
+h3{font-size:18px;margin:30px 0 10px}
+h4{font-size:16px;margin:22px 0 8px}
+.why{position:relative;padding-left:24px;margin:0}
+.why:before{content:"";position:absolute;left:5px;top:8px;bottom:14px;width:2px;background:var(--line)}
+.why .row{position:relative;padding:0 0 12px}
+.why .row:before{content:"";position:absolute;left:-24px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+.why .row.later:before{background:var(--accent)}
+.why b{display:block;font-size:14.5px;color:var(--accent)}
+.why p{margin:1px 0 0;max-width:74ch;font-size:15.5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+svg{display:block;width:100%;height:auto}
+svg text{font:12px 'Be Vietnam Pro',system-ui,sans-serif;fill:var(--muted)}
+.ctls{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 24px;margin:0 0 14px}
+.ctl{display:grid;grid-template-columns:1fr auto;gap:0 10px;font-size:14px}
+.ctl input{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.ctl output{font-weight:600}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px}
+.chk input{accent-color:var(--accent);width:17px;height:17px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.btn{font:inherit;font-size:14px;padding:7px 14px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin:12px 0}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.stat small{display:block;color:var(--muted);font-size:12.5px;line-height:1.35}
+.stat strong{font-size:19px}
+.stat.bad strong{color:var(--bad)}.stat.warn strong{color:var(--warn)}.stat.good strong{color:var(--good)}
+.note{padding:10px 14px;border-radius:10px;background:var(--accent-soft);font-size:14.5px;margin:10px 0 0}
+.note.warn{background:var(--warn-soft)}.note.bad{background:var(--bad-soft)}.note.good{background:var(--good-soft)}
+pre{background:var(--code-bg);color:var(--code-ink);padding:16px;border-radius:12px;overflow-x:auto;font:13px/1.6 'JetBrains Mono',ui-monospace,Consolas,monospace;margin:0}
+pre code{background:none;padding:0;font:inherit}
+.codehead{font-size:13.5px;color:var(--muted);margin:0 0 6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.two ul{margin:0;padding-left:20px}.two li{margin:0 0 7px;font-size:15px}.two p{margin:0;font-size:15px}
+details.q{border:1px solid var(--line);border-radius:10px;padding:9px 14px;margin:8px 0;background:var(--surface)}
+details.q summary{cursor:pointer;font-weight:500}
+details.q p{margin:8px 0 2px;color:var(--muted)}
+.pool i{display:inline-block;width:16px;height:16px;border-radius:4px;margin:0 4px 4px 0;border:2px solid var(--accent)}
+.pool i.on{background:var(--accent)}
+.split{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;align-items:start;margin-bottom:6px}
+.split .note{margin:0}
+.split2{display:grid;grid-template-columns:minmax(0,320px) 1fr;gap:18px;align-items:center}
+.plan{background:var(--code-bg);border-radius:12px;padding:8px 0;overflow-x:auto}
+.pl{display:block;width:100%;text-align:left;font:12.5px/1.5 'JetBrains Mono',ui-monospace,Consolas,monospace;background:transparent;color:var(--code-ink);border:0;border-left:3px solid transparent;padding:4px 12px;cursor:pointer;white-space:pre-wrap;word-break:break-word}
+.pl:hover{background:rgba(255,255,255,.05)}
+.pl.on{background:rgba(255,255,255,.1);border-left-color:#E3B23C}
+.tbl{border-collapse:collapse;width:100%;font-size:14px;margin-top:14px;min-width:560px}
+.tbl th,.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--muted);font-weight:600}
+.log{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.log li{padding:7px 12px;border-radius:8px;border-left:4px solid var(--line);background:var(--bg);font-size:14px}
+.log li.c{border-left-color:var(--accent)}
+.log li.w{border-left-color:var(--warn);background:var(--warn-soft)}
+.log li.good,.log li.ok{border-left-color:var(--good);background:var(--good-soft)}
+.log li.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.arow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 8px;font-size:14px}
+.arow .lab{width:74px;color:var(--muted);flex:none}
+.blk{display:inline-block;width:22px;height:22px;border-radius:5px}
+.blk.q{background:var(--ink)}.blk.heap{background:var(--accent)}.blk.idx{background:var(--indigo)}.blk.wal{background:var(--warn)}
+.bar{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;margin:0 0 6px;font-size:13.5px}
+.bar span{display:block;height:14px;border-radius:4px}
+.bar em{font-style:normal;color:var(--muted)}
+.meter{height:16px;border-radius:8px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin:8px 0}
+.meter i{display:block;height:100%;width:8%;background:var(--accent);transition:width .15s linear}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.sc{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.sc h4{margin:0 0 8px}.sc .log li{background:var(--surface)}
+.sc .log li.ok{background:var(--good-soft)}.sc .log li.no{border-left-color:var(--bad);background:var(--bad-soft)}
+.radios{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 4px}
+.radios label{display:flex;gap:7px;align-items:center;font-size:14.5px}
+.radios input{accent-color:var(--accent)}
+footer{padding:50px 0 60px;color:var(--muted);font-size:14.5px}
+@media (max-width:760px){.two,.split,.split2,.cols2{grid-template-columns:1fr}.hero{padding-top:30px}}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Mục lục"><div class="wrap" id="nav"><a href="#ladder">Vì sao học sớm</a></div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>Backend thực chiến: 10 khái niệm đáng học sớm</h1>
+<p class="sub">Dành cho dev PERN trong 2–4 năm đầu. Mỗi khái niệm có đủ ba phần: vì sao cần vững ở từng giai đoạn, một mô phỏng bạn tự chỉnh để thấy nó chạy, và đoạn code áp dụng ngay vào Express, Postgres, Prisma.</p>
+<div class="steps3">
+<div><b>1. Đọc phần "Vì sao"</b>Hiểu mình đang đầu tư vào đâu và lợi ích kéo dài tới đâu.</div>
+<div><b>2. Chỉnh thử mô phỏng</b>Kéo thanh trượt cho đến khi hệ thống hỏng, rồi tự giải thích vì sao.</div>
+<div><b>3. Làm lab 15 phút</b>Tái hiện trên máy bạn. Chưa tái hiện được thì chưa thật sự hiểu.</div>
+</div>
+</div></header>
+
+<section id="ladder"><div class="wrap">
+<h2 style="font-size:clamp(22px,4vw,28px);margin:0 0 6px">Bậc thang 4 năm: học gì, sâu đến đâu, vào lúc nào</h2>
+<p class="lead" style="margin-bottom:14px">Đọc theo cột. Năm 1: nhận ra triệu chứng và gọi đúng tên. Năm 2–3: tự chẩn đoán và sửa mà không cần hỏi ai. Năm 3–4: quyết định kiến trúc, dẫn dắt review và on-call.</p>
+<div class="scroll"><table class="lad" id="lad"></table></div>
+<p class="legend">Độ sâu: <span class="pips"><i></i><i></i><i></i></span> Hiểu (1 chấm), Áp dụng (2 chấm), Thiết kế và dẫn dắt (3 chấm). Bấm tên khái niệm để nhảy tới phần đó.</p>
+<div class="why3">
+<div><h3>Bạn sẽ gặp chúng dù có chủ động hay không</h3><p>p99, pool cạn, slow query, request bị retry: tất cả xuất hiện trong năm đầu. Học trước thì là bài học rẻ, học sau thì là postmortem đắt.</p></div>
+<div><h3>Chúng không lỗi thời</h3><p>ORM và framework đổi sau vài năm, còn Postgres, TCP, xác suất và lý thuyết hàng đợi thì không. Kiến thức nền sinh lãi kép, kiến thức công cụ thì khấu hao.</p></div>
+<div><h3>Chúng là ranh giới giữa các cấp bậc</h3><p>Junior làm cho chạy được, mid làm cho chạy đúng, senior làm cho chạy đúng khi mọi thứ hỏng và khi tải gấp 10 lần. Design review và phỏng vấn senior xoay quanh đúng những khái niệm này.</p></div>
+</div>
+</div></section>
+
+<main id="main"></main>
+
+<footer><div class="wrap">Gợi ý nhịp học: mỗi tuần một mục. Đọc, chỉnh mô phỏng, làm lab, trả lời phần tự kiểm tra, rồi viết 5 dòng ghi chú bằng lời của bạn. Số liệu trong các mô phỏng là minh hoạ để thấy hình dạng của vấn đề, không phải benchmark thật. Hãy đo trên hệ thống của bạn.</div></footer>
+
+<script type="text/plain" id="code-p99">
+import client from 'prom-client';
+
+const httpDuration = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'HTTP latency',
+  labelNames: ['method', 'route', 'status'],
+  buckets: [0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5], // đặt bucket quanh SLO của bạn
+});
+
+app.use((req, res, next) => {
+  const end = httpDuration.startTimer();
+  res.on('finish', () =>
+    end({ method: req.method, route: req.route?.path ?? 'unknown', status: res.statusCode })
+  );
+  next();
+});
+
+// PromQL cho p99 theo route (gộp histogram của mọi instance):
+// histogram_quantile(0.99, sum by (le, route) (rate(http_request_duration_seconds_bucket[5m])))
+</script>
+<script type="text/plain" id="code-pool">
+import { Pool } from 'pg';
+
+export const pool = new Pool({
+  max: 10,                         // mỗi instance. Nhớ: tổng = instance x max
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 2_000,  // chờ connection quá 2s thì báo lỗi rõ ràng, không treo
+  statement_timeout: 5_000,        // query quá 5s bị cắt
+});
+
+pool.on('error', (e) => console.error('idle client error', e));
+
+// Metric nên xuất ra: pool.totalCount, pool.idleCount, pool.waitingCount
+// waitingCount > 0 kéo dài = bạn đang xếp hàng chờ connection, chưa chắc DB chậm.
+
+// Prisma: bản dùng query engine kiểu cũ đặt trong DATABASE_URL:
+//   postgresql://...?connection_limit=10&pool_timeout=10
+// Bản mới dùng driver adapter thì pool nằm ở chính pg.Pool như trên.
+// Kiểm tra docs đúng phiên bản bạn đang cài.
+</script>
+<script type="text/plain" id="code-explain">
+-- 1) Lấy plan thật, kèm số page đã đọc
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM orders WHERE user_id = 42 ORDER BY created_at DESC LIMIT 20;
+
+-- 2) Sửa: cột so sánh bằng đứng trước, cột sắp xếp đứng sau
+CREATE INDEX CONCURRENTLY idx_orders_user_created
+  ON orders (user_id, created_at DESC);
+
+-- 3) Với UPDATE/DELETE, ANALYZE chạy THẬT. Luôn bọc transaction rồi rollback:
+BEGIN;
+EXPLAIN (ANALYZE, BUFFERS) UPDATE orders SET status = 'paid' WHERE id = 1;
+ROLLBACK;
+
+-- Prisma: new PrismaClient({ log: ['query'] }) để lấy SQL thật mà ORM sinh ra,
+-- rồi dán vào EXPLAIN. Đừng đoán query Prisma đang chạy.
+</script>
+<script type="text/plain" id="code-wamp">
+-- Index chưa từng được dùng (chạy sau khi hệ thống đã hoạt động đủ lâu)
+SELECT relname AS tbl, indexrelname AS idx, idx_scan,
+       pg_size_pretty(pg_relation_size(indexrelid)) AS size
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0
+ORDER BY pg_relation_size(indexrelid) DESC;
+-- Loại các index UNIQUE/PK ra khỏi danh sách xoá: chúng đảm bảo ràng buộc.
+
+-- Tỉ lệ HOT update của các bảng bị UPDATE nhiều nhất
+SELECT relname, n_tup_upd, n_tup_hot_upd,
+       round(100.0 * n_tup_hot_upd / nullif(n_tup_upd, 0), 1) AS hot_pct
+FROM pg_stat_user_tables
+ORDER BY n_tup_upd DESC LIMIT 10;
+
+-- Chừa chỗ trống trong mỗi page để HOT có chỗ ghi (áp dụng cho dữ liệu ghi mới)
+ALTER TABLE orders SET (fillfactor = 85);
+</script>
+<script type="text/plain" id="code-bp">
+import pLimit from 'p-limit';
+import { pipeline } from 'node:stream/promises';
+
+const limit = pLimit(20); // tối đa 20 việc nặng chạy cùng lúc
+
+app.post('/reports', async (req, res) => {
+  if (limit.pendingCount >= 100) {            // hàng đợi có giới hạn
+    res.set('Retry-After', '5');
+    return res.status(429).json({ error: 'Server đang bận, thử lại sau' });
+  }
+  const result = await limit(() => buildReport(req.body));
+  res.json(result);
+});
+
+// File/CSV lớn: dùng pipeline để tự xử lý backpressure giữa các stream
+app.get('/export', async (req, res) => {
+  await pipeline(db.streamOrders(), toCsv(), res); // write() trả false thì dừng đọc, chờ 'drain'
+});
+</script>
+<script type="text/plain" id="code-tail">
+// Mỗi call có deadline riêng. Dữ liệu phụ lỗi thì bỏ qua, dữ liệu lõi lỗi thì báo lỗi.
+const [user, orders, recs] = await Promise.allSettled([
+  getUser(id,   { signal: AbortSignal.timeout(150) }),
+  getOrders(id, { signal: AbortSignal.timeout(150) }),
+  getRecs(id,   { signal: AbortSignal.timeout(100) }), // dữ liệu phụ
+]);
+
+if (user.status === 'rejected' || orders.status === 'rejected') {
+  throw new Error('core data failed');
+}
+return {
+  user: user.value,
+  orders: orders.value,
+  recs: recs.status === 'fulfilled' ? recs.value : [], // degrade gracefully
+};
+
+// Hedged request (gửi call thứ hai khi call đầu quá lâu) chỉ dùng cho thao tác
+// ĐỌC hoặc thao tác đã idempotent. Xem mục Idempotency key.
+</script>
+<script type="text/plain" id="code-idem">
+// schema.prisma
+// model IdempotencyKey {
+//   key         String   @id
+//   requestHash String
+//   status      String            // 'processing' | 'done'
+//   response    Json?
+//   createdAt   DateTime @default(now())
+// }
+
+async function payOnce(key: string, body: PayBody) {
+  const hash = sha256(JSON.stringify(body));
+  try {
+    await prisma.idempotencyKey.create({
+      data: { key, requestHash: hash, status: 'processing' },
+    });
+  } catch (e: any) {
+    if (e.code !== 'P2002') throw e;                 // P2002 = unique violation: key đã tồn tại
+    const row = await prisma.idempotencyKey.findUniqueOrThrow({ where: { key } });
+    if (row.requestHash !== hash) return { status: 422, body: { error: 'Key dùng cho request khác' } };
+    if (row.status === 'processing') return { status: 409, body: { error: 'Đang xử lý' } };
+    return { status: 200, body: row.response };      // trả lại kết quả cũ
+  }
+
+  const result = await charge(body);  // lý tưởng: cùng transaction DB với bản ghi nghiệp vụ
+  await prisma.idempotencyKey.update({
+    where: { key },
+    data: { status: 'done', response: result },
+  });
+  return { status: 200, body: result };
+}
+</script>
+<script type="text/plain" id="code-outbox">
+// 1) Ghi dữ liệu + ý định gửi event trong CÙNG một transaction
+await prisma.$transaction(async (tx) => {
+  const order = await tx.order.create({ data });
+  await tx.outbox.create({
+    data: { aggregateId: String(order.id), type: 'OrderCreated', payload: order },
+  });
+});
+
+// 2) relay.ts: chạy lặp mỗi ~500ms, có thể chạy nhiều instance cùng lúc
+await prisma.$transaction(async (tx) => {
+  const rows = await tx.$queryRaw<OutboxRow[]>`
+    SELECT id, type, payload FROM outbox
+    WHERE published_at IS NULL
+    ORDER BY id LIMIT 50
+    FOR UPDATE SKIP LOCKED`;               // instance khác bỏ qua các dòng đang bị khoá
+
+  for (const r of rows) {
+    await broker.publish(r.type, { eventId: r.id, ...r.payload }); // eventId để consumer khử trùng
+  }
+  if (rows.length) {
+    await tx.$executeRaw`
+      UPDATE outbox SET published_at = now()
+      WHERE id IN (${Prisma.join(rows.map((r) => r.id))})`;
+  }
+}, { timeout: 10_000 });                   // batch nhỏ, tránh giữ khoá lâu
+</script>
+<script type="text/plain" id="code-cdc">
+-- postgresql.conf (cần restart):  wal_level = logical
+
+-- Chỉ stream các bảng cần thiết
+CREATE PUBLICATION app_pub FOR TABLE orders, users;
+
+-- Debezium tự tạo replication slot. Hãy giám sát lượng WAL bị giữ lại:
+SELECT slot_name, active,
+       pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) AS wal_retained
+FROM pg_replication_slots;
+
+-- Slot không còn ai dùng thì xoá, nếu không WAL sẽ dồn lại:
+-- SELECT pg_drop_replication_slot('ten_slot');
+
+-- Rào an toàn (Postgres 13+): slot nào giữ WAL quá ngưỡng sẽ bị vô hiệu hoá
+-- ALTER SYSTEM SET max_slot_wal_keep_size = '20GB';
+</script>
+<script type="text/plain" id="code-hash">
+import { createHash } from 'node:crypto';
+
+const hash = (s: string) => createHash('md5').update(s).digest().readUInt32BE(0);
+
+export class Ring {
+  private points: { pos: number; node: string }[] = [];
+
+  constructor(nodes: string[], vnodes = 100) {
+    for (const n of nodes)
+      for (let v = 0; v < vnodes; v++)
+        this.points.push({ pos: hash(`${n}#${v}`), node: n });
+    this.points.sort((a, b) => a.pos - b.pos);
+  }
+
+  get(key: string): string {
+    const h = hash(key);
+    let lo = 0, hi = this.points.length;
+    while (lo < hi) {                       // tìm điểm đầu tiên có pos >= h (đi theo chiều kim đồng hồ)
+      const m = (lo + hi) >> 1;
+      this.points[m].pos < h ? (lo = m + 1) : (hi = m);
+    }
+    return this.points[lo % this.points.length].node;
+  }
+}
+// Thực tế hãy dùng công cụ có sẵn (Redis Cluster, Citus, thư viện hash ring).
+// Hiểu thuật toán để chọn đúng công cụ và đúng shard key.
+</script>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt=(n,d=0)=>n.toLocaleString('vi-VN',{maximumFractionDigits:d});
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const ctl=(id,label,min,max,val,step=1,u='')=>`<label class="ctl"><span>${label}</span><output id="${id}-o">${val}${u}</output><input type="range" id="${id}" min="${min}" max="${max}" value="${val}" step="${step}" data-u="${u}"></label>`;
+const bind=(ids,fn)=>{ids.forEach(id=>{const el=$('#'+id),o=$('#'+id+'-o');el.addEventListener('input',()=>{if(o&&el.type==='range')o.textContent=el.value+(el.dataset.u||'');fn()})});fn()};
+
+/* ---------- 1. p99 ---------- */
+function init1(){
+ bind(['p1-p','p1-f'],()=>{
+  const p=+$('#p1-p').value/100,f=+$('#p1-f').value,r=rng(7),N=3000,xs=[];
+  for(let i=0;i<N;i++){const g=(r()+r()+r()+r()-2)*1.2;let v=45*Math.exp(g*.35)+10;if(r()<p)v*=f*(.6+r()*.8);xs.push(v)}
+  xs.sort((a,b)=>a-b);
+  const q=x=>xs[Math.min(N-1,Math.floor(x*N))],mean=xs.reduce((a,b)=>a+b)/N,p50=q(.5),p95=q(.95),p99=q(.99),mx=xs[N-1];
+  const W=640,H=230,L=8,R=8,T=70,B=24,xmax=Math.max(p99*1.6,250),bins=60,cnt=new Array(bins).fill(0);
+  xs.forEach(v=>{cnt[Math.min(bins-1,Math.floor(v/xmax*bins))]++});
+  const cm=Math.max(...cnt),bw=(W-L-R)/bins,X=v=>L+Math.min(v,xmax)/xmax*(W-L-R);
+  let s='';
+  cnt.forEach((c,i)=>{const h=Math.sqrt(c/cm)*(H-T-B);s+=`<rect x="${L+i*bw+1}" y="${H-B-h}" width="${bw-2}" height="${h}" rx="2" fill="var(--accent)" opacity=".75"/>`});
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}" stroke="var(--line)"/>`;
+  [['trung bình',mean,'var(--warn)'],['p50',p50,'var(--good)'],['p95',p95,'var(--indigo)'],['p99',p99,'var(--bad)']].forEach(([n,v,c],i)=>{
+   const x=X(v),y=14+i*14,end=x>W-150;
+   s+=`<line x1="${x}" x2="${x}" y1="${y-6}" y2="${H-B}" stroke="${c}" stroke-width="2"/><text x="${x+(end?-5:5)}" y="${y+3}" text-anchor="${end?'end':'start'}" style="fill:${c};font-weight:600">${n} ${fmt(v)}ms</text>`});
+  s+=`<text x="${L}" y="${H-6}">0 ms</text><text x="${W-R}" y="${H-6}" text-anchor="end">${fmt(xmax)} ms (chiều cao cột = căn bậc hai số request)</text>`;
+  $('#p1-svg').innerHTML=s;
+  $('#p1-stats').innerHTML=[['Trung bình',mean,'warn'],['p50',p50,'good'],['p95',p95,''],['p99',p99,'bad'],['Chậm nhất',mx,'']].map(([n,v,c])=>`<div class="stat ${c}"><small>${n}</small><strong>${fmt(v)} ms</strong></div>`).join('');
+  $('#p1-note').innerHTML=`Dashboard chỉ hiện <b>trung bình ${fmt(mean)}ms</b> nghe rất ổn, nhưng <b>p99 gấp ${fmt(p99/mean,1)} lần</b>. Với 1.000.000 request mỗi ngày, có 10.000 request chậm hơn ${fmt(p99)}ms, và chúng dễ dồn vào user dùng nhiều nhất vì họ gửi nhiều request nên dính đuôi chậm nhiều nhất.`;
+ });
+}
+
+/* ---------- 2. pooling ---------- */
+function init2(){
+ bind(['p2-l','p2-s','p2-c'],()=>{
+  const lam=+$('#p2-l').value,S=+$('#p2-s').value,c=+$('#p2-c').value,dt=.005,T=20,steps=T/dt,r=rng(11);
+  const busy=[],q=[],waits=[],qs=[];let bs=0,mq=0;
+  for(let i=0;i<steps;i++){
+   const t=i*dt;
+   if(r()<lam*dt)q.push(t);
+   while(busy.length<c&&q.length){waits.push((t-q.shift())*1000);busy.push(-S/1000*Math.log(1-r()))}
+   bs+=busy.length;
+   for(let j=busy.length-1;j>=0;j--){busy[j]-=dt;if(busy[j]<=0)busy.splice(j,1)}
+   if(q.length>mq)mq=q.length;
+   if(i%20===0)qs.push(q.length);
+  }
+  q.forEach(a=>waits.push((T-a)*1000));
+  waits.sort((a,b)=>a-b);
+  const avg=waits.reduce((a,b)=>a+b,0)/Math.max(1,waits.length),p95=waits[Math.floor(waits.length*.95)]||0,to=waits.filter(w=>w>2000).length;
+  const rho=lam*S/1000/c,ab=bs/steps;
+  $('#p2-pool').innerHTML='Slot trong pool (đặc = đang bận, trung bình): '+Array.from({length:c},(_,i)=>`<i class="${i<Math.round(ab)?'on':''}"></i>`).join('');
+  const W=640,H=150,ym=Math.max(10,mq);let d='';
+  qs.forEach((v,i)=>{d+=(i?'L':'M')+(i/(qs.length-1)*(W-20)+10)+' '+(120-v/ym*100)});
+  $('#p2-svg').innerHTML=`<line x1="10" x2="630" y1="120" y2="120" stroke="var(--line)"/><path d="${d}" fill="none" stroke="var(--bad)" stroke-width="2.5"/><text x="10" y="14">Số request đang xếp hàng chờ connection (đỉnh: ${mq})</text><text x="10" y="140">0s</text><text x="630" y="140" text-anchor="end">20s</text>`;
+  $('#p2-stats').innerHTML=[['Mức sử dụng pool',fmt(rho*100)+'%',rho>=.95?'bad':rho>=.7?'warn':'good'],['Chờ trung bình',fmt(avg)+' ms',''],['Chờ p95',fmt(p95)+' ms',p95>500?'bad':''],['Request chờ quá 2s',fmt(to),to?'bad':'good']].map(([n,v,c])=>`<div class="stat ${c}"><small>${n}</small><strong>${v}</strong></div>`).join('');
+  $('#p2-note').className='note '+(rho>=.95?'bad':rho>=.7?'warn':'good');
+  $('#p2-note').innerHTML=rho>=.95?`Quá tải: mỗi giây có ${lam} request cần ${fmt(lam*S/1000,1)} connection-giây nhưng pool chỉ cung cấp ${c}. Hàng đợi tăng mãi, user thấy timeout dù DB chưa chắc đã bận. Tăng pool có giới hạn, hoặc làm query nhanh hơn.`:rho>=.7?`Đang ở vùng nguy hiểm: pool bận trên 70% nên chỉ cần một đợt tăng nhẹ là hàng đợi phình ra, p99 tăng vọt dù mức trung bình vẫn ổn.`:`Khoẻ: pool còn dư chỗ nên hầu như không phải xếp hàng. Thử giảm pool xuống hoặc tăng thời gian query để xem hàng đợi hình thành.`;
+ });
+ bind(['p2-n','p2-m'],()=>{
+  const n=+$('#p2-n').value,m=+$('#p2-m').value,tot=n*m,sc=v=>10+v/150*620;
+  $('#p2b-svg').innerHTML=`<rect x="10" y="26" width="620" height="22" rx="6" fill="var(--bg)" stroke="var(--line)"/><rect x="10" y="26" width="${Math.min(tot,150)/150*620}" height="22" rx="6" fill="${tot>100?'var(--bad)':tot>90?'var(--warn)':'var(--accent)'}"/><line x1="${sc(90)}" x2="${sc(90)}" y1="20" y2="54" stroke="var(--warn)" stroke-dasharray="3 3" stroke-width="2"/><line x1="${sc(100)}" x2="${sc(100)}" y1="20" y2="54" stroke="var(--bad)" stroke-width="2"/><text x="${sc(90)-5}" y="14" text-anchor="end">~90 (chừa chỗ cho migration, admin)</text><text x="${sc(100)+5}" y="14">max_connections = 100</text><text x="10" y="68">Tổng = ${n} instance × ${m} = ${tot} connection</text>`;
+  const nb=$('#p2b-note');nb.className='note '+(tot>100?'bad':tot>90?'warn':'good');
+  nb.innerHTML=tot>100?`Vượt max_connections: instance mới sẽ nhận lỗi <code>too many clients</code>. Giảm pool, đặt PgBouncer phía trước, hoặc giới hạn số replica tối đa ≤ ${Math.floor(90/m)}.`:tot>90?`Sát giới hạn. Autoscale thêm một instance là chạm trần.`:`Còn dư chỗ. Với pool ${m}, có thể scale tới ${Math.floor(90/m)} instance. Đặt đúng con số này làm <code>maxReplicas</code> của autoscaler.`;
+ });
+}
+
+/* ---------- 3. EXPLAIN ---------- */
+function init3(){
+ const P={a:[
+  [0,'Limit  (cost=48165.2..48165.3 rows=20 width=64) (actual time=412.8..412.9 rows=20 loops=1)','Node trên cùng là kết quả cuối, Execution Time tính cho cả cây. Đọc plan từ trong ra ngoài: node thụt vào sâu nhất chạy trước.'],
+  [1,'-> Sort  (cost=48165.2..48170.1 rows=1950 width=64) (actual time=412.8..412.8 rows=20 loops=1)','Sort 2.012 dòng rồi chỉ giữ 20 dòng đầu. Tốn công vì không có sẵn thứ tự từ index.'],
+  [2,'Sort Method: top-N heapsort  Memory: 28kB','Sort trong RAM nên ổn. Nếu thấy <code>external merge  Disk</code> nghĩa là sort tràn ra đĩa, rất chậm.'],
+  [2,'-> Seq Scan on orders  (cost=0.00..48100.0 rows=1950 width=64) (actual time=0.9..410.2 rows=2012 loops=1)','🚩 Seq Scan: đọc toàn bộ bảng 2 triệu dòng chỉ để lấy 2.012 dòng. 410ms nằm gần hết ở node này. Ước lượng rows=1950 gần với thực tế 2012 nên thống kê đang tốt. Nếu lệch trên 10 lần, hãy chạy <code>ANALYZE</code>.'],
+  [3,'Filter: (user_id = 42)','Filter nghĩa là lọc SAU khi đã đọc dòng lên. Điều kiện nằm ở Filter thay vì Index Cond là dấu hiệu thiếu index.'],
+  [3,'Rows Removed by Filter: 1997988','🚩 Đọc 2 triệu dòng rồi vứt gần hết. Đây là tín hiệu rõ nhất cho thấy cần index trên cột lọc.'],
+  [3,'Buffers: shared hit=1200 read=26800','26.800 page phải đọc từ đĩa (mỗi page 8KB, khoảng 210MB). <code>hit</code> là lấy từ cache. <code>read</code> cao nghĩa là I/O đang đau.'],
+  [0,'Planning Time: 0.3 ms\nExecution Time: 413.0 ms','Thời gian thực tế. Con số <code>cost</code> chỉ là đơn vị ước lượng của planner, đừng đọc nó như mili giây.']],
+ b:[
+  [0,'Limit  (cost=0.43..58.2 rows=20 width=64) (actual time=0.03..0.09 rows=20 loops=1)','Dừng ngay khi đủ 20 dòng vì index đã sắp xếp sẵn theo created_at DESC.'],
+  [1,'-> Index Scan using idx_orders_user_created on orders  (cost=0.43..5640.1 rows=1950 width=64) (actual time=0.03..0.08 rows=20 loops=1)','Nhảy thẳng tới user_id = 42 rồi đọc 20 dòng đầu theo đúng thứ tự. Không còn Sort, không quét cả bảng. Index <code>(user_id, created_at DESC)</code>: cột so sánh bằng đứng trước, cột sắp xếp đứng sau.'],
+  [2,'Index Cond: (user_id = 42)','<code>Index Cond</code> là điều kiện được dùng để tìm trong index (tốt). <code>Filter</code> là lọc sau khi đọc (kém hơn).'],
+  [2,'Buffers: shared hit=24','Chỉ 24 page thay vì khoảng 28.000. I/O giảm cỡ 1.000 lần.'],
+  [0,'Planning Time: 0.2 ms\nExecution Time: 0.12 ms','413ms xuống 0,12ms, nhanh hơn khoảng 3.400 lần. Đổi lại mỗi lần ghi vào bảng này phải cập nhật thêm một index (xem mục Write amplification).']]};
+ let cur='a',sel=0;
+ const render=()=>{
+  $('#p3-plan').innerHTML=P[cur].map((l,i)=>`<button class="pl${i===sel?' on':''}" data-i="${i}" style="padding-left:${12+l[0]*18}px">${esc(l[1])}</button>`).join('');
+  $('#p3-note').innerHTML=P[cur][sel][2];
+  $('#p3-ta').className='btn'+(cur==='a'?' primary':'');$('#p3-tb').className='btn'+(cur==='b'?' primary':'');
+ };
+ $('#p3-ta').onclick=()=>{cur='a';sel=3;render()};
+ $('#p3-tb').onclick=()=>{cur='b';sel=1;render()};
+ $('#p3-plan').addEventListener('click',e=>{const b=e.target.closest('.pl');if(b){sel=+b.dataset.i;render()}});
+ sel=3;render();
+}
+
+/* ---------- 4. write amplification ---------- */
+function init4(){
+ bind(['p4-i','p4-r','p4-c'],()=>{
+  const n=+$('#p4-i').value,rate=+$('#p4-r').value,hit=$('#p4-c').checked;
+  const idx=hit?n:0,heap=1,wal=heap+idx,total=heap+idx+wal;
+  const blk=(c,k,t)=>Array.from({length:k},()=>`<i class="blk ${c}" title="${t}"></i>`).join('');
+  $('#p4-vis').innerHTML=`<div class="arow"><span class="lab">1 UPDATE</span><i class="blk q"></i><span>ở tầng code chỉ là một câu lệnh</span></div><div class="arow"><span class="lab">Heap</span>${blk('heap',heap,'phiên bản dòng mới')}<span>phiên bản dòng mới (MVCC), bản cũ thành dead tuple</span></div><div class="arow"><span class="lab">Index</span>${idx?blk('idx',idx,'entry mới trong index'):'<em>không ghi thêm (HOT update)</em>'}</div><div class="arow"><span class="lab">WAL</span>${blk('wal',wal,'bản ghi WAL')}<span>mỗi thay đổi vật lý đều ghi log trước</span></div>`;
+  $('#p4-stats').innerHTML=[['Thao tác ghi / 1 UPDATE',total,total>6?'bad':total>3?'warn':'good'],['Thao tác ghi / giây',fmt(total*rate),''],['So với HOT update',fmt(total/2,1)+'×',total>2?'warn':'good']].map(([n,v,c])=>`<div class="stat ${c}"><small>${n}</small><strong>${v}</strong></div>`).join('');
+  const nb=$('#p4-note');nb.className='note '+(hit&&n>0?'warn':'good');
+  nb.innerHTML=hit&&n>0?`Cột bị sửa nằm trong index nên Postgres không dùng được HOT, phải thêm entry vào <b>mọi</b> index của bảng. Bớt một index không cần thiết là giảm ghi ngay, và index trên cột hay đổi (như <code>updated_at</code>, <code>last_seen</code>) là loại tốn kém nhất.`:`HOT update: phiên bản mới nằm cùng page và index không phải đổi. Điều kiện: không cột nào trong index bị sửa, và page còn chỗ trống (xem <code>fillfactor</code>). Số liệu trên là cấp độ lớn để so sánh, chưa phải byte thật.`;
+ });
+}
+
+/* ---------- 5. backpressure ---------- */
+function init5(){
+ bind(['p5-s','p5-c'],()=>{
+  const sp=+$('#p5-s').value,cr=+$('#p5-c').value,cap=200,dt=.1,T=60;
+  let qa=0,qb=0,rej=0,pa=0,pb=0;const A=[],B=[];
+  for(let k=0;k<T/dt;k++){const t=k*dt,ar=(t>=10&&t<30)?sp:40;
+   qa=Math.max(0,qa+(ar-cr)*dt);qb=Math.max(0,qb+(ar-cr)*dt);
+   if(qb>cap){rej+=qb-cap;qb=cap}
+   pa=Math.max(pa,qa);pb=Math.max(pb,qb);
+   if(k%5===0){A.push(qa);B.push(qb)}}
+  const W=640,H=220,ym=Math.max(pa,cap*1.3,50),Y=v=>190-v/ym*165,Xs=i=>10+i/(A.length-1)*620;
+  const path=a=>a.map((v,i)=>(i?'L':'M')+Xs(i).toFixed(1)+' '+Y(v).toFixed(1)).join('');
+  $('#p5-svg').innerHTML=`<rect x="${10+10/60*620}" y="10" width="${20/60*620}" height="180" fill="var(--warn-soft)"/><text x="${10+20/60*620}" y="24" text-anchor="middle">spike</text><line x1="10" x2="630" y1="190" y2="190" stroke="var(--line)"/><line x1="10" x2="630" y1="${Y(cap)}" y2="${Y(cap)}" stroke="var(--accent)" stroke-dasharray="4 4"/><text x="632" y="${Y(cap)-4}" text-anchor="end" style="fill:var(--accent)">giới hạn hàng đợi = ${cap}</text><path d="${path(A)}" fill="none" stroke="var(--bad)" stroke-width="2.5"/><path d="${path(B)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/><text x="10" y="210">0s</text><text x="630" y="210" text-anchor="end">60s</text><text x="14" y="38" style="fill:var(--bad);font-weight:600">Không giới hạn</text><text x="14" y="54" style="fill:var(--accent);font-weight:600">Có giới hạn + từ chối</text>`;
+  const mem=pa*5/1024;
+  $('#p5-stats').innerHTML=[['Hàng đợi đỉnh (không giới hạn)',fmt(pa),pa>cap?'bad':'good'],['Item cuối phải chờ',fmt(pa/cr,1)+' s',pa/cr>5?'bad':''],['RAM nếu mỗi item 5KB',fmt(mem,1)+' MB',mem>50?'warn':''],['Bị từ chối (429) khi có giới hạn',fmt(rej),rej?'warn':'good'],['Chờ tối đa khi có giới hạn',fmt(pb/cr,1)+' s','good']].map(([n,v,c])=>`<div class="stat ${c}"><small>${n}</small><strong>${v}</strong></div>`).join('');
+  const nb=$('#p5-note');nb.className='note '+(sp>cr?'warn':'good');
+  nb.innerHTML=sp>cr?`Hàng đợi không giới hạn không giải quyết quá tải, nó chỉ dời vấn đề sang RAM và latency. Item cuối chờ ${fmt(pa/cr,1)}s, lúc đó client đã timeout từ lâu nhưng server vẫn xử lý: làm việc vô ích khi hệ thống đang yếu nhất. Bản có giới hạn từ chối sớm ${fmt(rej)} item, nhờ vậy phần còn lại vẫn nhanh.`:`Spike nhỏ hơn năng lực xử lý nên hàng đợi không tăng. Kéo tốc độ spike lên trên năng lực xử lý để thấy hệ thống bắt đầu hỏng.`;
+ });
+}
+
+/* ---------- 6. tail amplification ---------- */
+function init6(){
+ bind(['p6-n','p6-p'],()=>{
+  const N=+$('#p6-n').value,pp=+$('#p6-p').value,p=pp/100,P=k=>1-Math.pow(1-p,k);
+  let d='';for(let k=1;k<=100;k++)d+=(k===1?'M':'L')+(40+(k-1)/99*580).toFixed(1)+' '+(160-P(k)*140).toFixed(1);
+  let s='';[0,.25,.5,.75,1].forEach(v=>{s+=`<line x1="40" x2="620" y1="${160-v*140}" y2="${160-v*140}" stroke="var(--line)"/><text x="34" y="${164-v*140}" text-anchor="end">${v*100}%</text>`});
+  s+=`<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.5"/><line x1="${40+(N-1)/99*580}" x2="${40+(N-1)/99*580}" y1="20" y2="160" stroke="var(--bad)" stroke-dasharray="4 3"/><circle cx="${40+(N-1)/99*580}" cy="${160-P(N)*140}" r="6" fill="var(--bad)"/><text x="40" y="180">1 call</text><text x="620" y="180" text-anchor="end">100 call trong một request</text>`;
+  $('#p6-svg').innerHTML=s;
+  const r=rng(5);let slow=0;for(let i=0;i<1000;i++){for(let k=0;k<N;k++){if(r()<p){slow++;break}}}
+  const q=Math.pow(.99,1/N)*100;
+  $('#p6-stats').innerHTML=[['Số call song song/nối tiếp',N,''],['Xác suất request dính ≥1 call chậm',fmt(P(N)*100,1)+'%',P(N)>.3?'bad':P(N)>.1?'warn':'good'],['Mô phỏng 1.000 request',slow+' request chậm',''],['Để p99 cả request ổn, mỗi call phải đạt',fmt(q,3)+'%','warn']].map(([n,v,c])=>`<div class="stat ${c}"><small>${n}</small><strong>${v}</strong></div>`).join('');
+  const nb=$('#p6-note');nb.className='note '+(P(N)>.3?'bad':'warn');
+  nb.innerHTML=`Mỗi call chỉ ${pp}% chậm, nhưng một request gọi ${N} call thì <b>${fmt(P(N)*100,1)}%</b> request dính ít nhất một call chậm (công thức: 1 − (1 − p)<sup>N</sup>). Hướng giải quyết: giảm số hop, đặt deadline từng call, cache, và cho phép trả kết quả thiếu dữ liệu phụ.`;
+ });
+}
+
+/* ---------- 7. idempotency ---------- */
+function init7(){
+ let bal=1000,ch=0,seen=false,log=[];
+ const render=()=>{
+  $('#p7-bal').textContent=fmt(bal)+'k';$('#p7-ch').textContent=ch;
+  $('#p7-ch').parentElement.className='stat '+(ch>1?'bad':ch===1?'good':'');
+  $('#p7-log').innerHTML=log.map(l=>`<li class="${l[0]}">${l[1]}</li>`).join('')||'<li>Chưa có request nào. Bấm thử nút phía trên.</li>';
+ };
+ const server=key=>{
+  if(key&&seen){log.push(['good','Server: đã thấy key <b>ord-1001</b>, trả lại kết quả cũ và <b>không trừ tiền</b>']);return}
+  bal-=100;ch++;if(key)seen=true;
+  log.push([ch===1?'ok':'bad',ch===1?'Server: trừ 100k':`Server: trừ thêm 100k (lần thứ ${ch}). User bị trừ tiền oan`]);
+ };
+ const pay=()=>{
+  const key=$('#p7-key').checked,lost=$('#p7-lost').checked;
+  log.push(['c',`Client gửi POST /pay ${key?'(Idempotency-Key: ord-1001)':'(không có key)'}`]);server(key);
+  if(lost){log.push(['w','Mạng: response bị mất, client chờ quá lâu nên timeout và tự retry']);log.push(['c','Client gửi lại POST /pay (retry)']);server(key)}
+  log.push(['ok','Client nhận được response thành công']);
+ };
+ $('#p7-pay').onclick=()=>{pay();render()};
+ $('#p7-dbl').onclick=()=>{pay();pay();render()};
+ $('#p7-rst').onclick=()=>{bal=1000;ch=0;seen=false;log=[];render()};
+ render();
+}
+
+/* ---------- 8. outbox ---------- */
+function init8(){
+ const SC={
+  1:{d:[['ok','INSERT order thành công'],['ok','Publish OrderCreated thành công']],dv:['good','Nhất quán, khi mọi thứ chạy tốt.'],
+     o:[['ok','Transaction: INSERT order + INSERT outbox, COMMIT'],['ok','Relay đọc dòng outbox và publish'],['ok','Đánh dấu published_at']],ov:['good','Nhất quán.']},
+  2:{d:[['ok','INSERT order, COMMIT'],['no','Process chết trước khi kịp publish']],dv:['bad','Đơn có trong DB nhưng event mất vĩnh viễn: không gửi email, không trừ kho, không ai biết.'],
+     o:[['ok','Transaction: order + outbox cùng COMMIT'],['no','Process chết'],['ok','Relay khởi động lại, thấy dòng chưa gửi, publish']],ov:['good','Event chỉ bị trễ, không mất.']},
+  3:{d:[['ok','Publish OrderCreated (làm trước)'],['no','INSERT order lỗi (vi phạm constraint hoặc DB down)']],dv:['bad','Event ma: các service khác xử lý một đơn không hề tồn tại.'],
+     o:[['ok','Transaction commit'],['ok','Relay publish thành công'],['no','Relay chết trước khi đánh dấu published_at'],['ok','Relay mới publish lại lần nữa']],ov:['warn','Event bị gửi trùng (at-least-once). Consumer phải idempotent, dùng eventId để khử trùng.']}};
+ const steps=a=>a.map(s=>`<li class="${s[0]}">${s[0]==='ok'?'✓':'✗'} ${s[1]}</li>`).join('');
+ const render=()=>{
+  const v=$('input[name=p8]:checked').value,c=SC[v];
+  $('#p8-a').innerHTML=`<ul class="log">${steps(c.d)}</ul><div class="note ${c.dv[0]}">${c.dv[1]}</div>`;
+  $('#p8-b').innerHTML=`<ul class="log">${steps(c.o)}</ul><div class="note ${c.ov[0]}">${c.ov[1]}</div>`;
+ };
+ document.querySelectorAll('input[name=p8]').forEach(r=>r.addEventListener('input',render));render();
+}
+
+/* ---------- 9. CDC ---------- */
+function init9(){
+ const bx=[['API','ghi dữ liệu'],['Postgres','bảng + index'],['WAL + slot','log thay đổi'],['Connector','Debezium / pg'],['Kafka','topic theo bảng'],['Consumers','Search, Cache, BI']];
+ let s='';
+ bx.forEach((b,i)=>{const x=10+i*130;s+=`<rect id="p9-b${i}" x="${x}" y="50" width="100" height="64" rx="10" fill="var(--surface)" stroke="${i===3?'var(--accent)':'var(--line)'}" stroke-width="2"/><text x="${x+50}" y="78" text-anchor="middle" style="fill:var(--ink);font-weight:600;font-size:13px">${b[0]}</text><text x="${x+50}" y="96" text-anchor="middle" style="font-size:11px">${b[1]}</text>`;
+  if(i<5)s+=`<line x1="${x+100}" x2="${x+130}" y1="82" y2="82" stroke="var(--muted)" stroke-width="2"/>`});
+ const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ let dots='';
+ for(let g=0;g<5;g++){const x1=110+g*130,x2=x1+30;
+  dots+=`<g class="${g>=2?'down':'up'}"><circle r="4.5" fill="var(--warn)" ${still?`cx="${x1+15}" cy="82"`:''}>${still?'':`<animateMotion dur="1.2s" begin="${g*.25}s" repeatCount="indefinite" path="M ${x1} 82 L ${x2} 82"/>`}</circle></g>`}
+ $('#p9-svg').innerHTML=s+dots+`<text x="10" y="150">Trước slot: app và Postgres vẫn chạy bình thường</text><text x="760" y="150" text-anchor="end">Sau slot: phụ thuộc connector còn sống</text>`;
+ let wal=8,on=true,timer=null;
+ const draw=()=>{
+  const f=$('#p9-fill');f.style.width=wal+'%';f.style.background=wal<60?'var(--accent)':wal<85?'var(--warn)':'var(--bad)';
+  document.querySelectorAll('#p9-svg .down').forEach(g=>g.style.display=on?'':'none');
+  $('#p9-b3').setAttribute('stroke',on?'var(--accent)':'var(--bad)');
+  $('#p9-btn').textContent=on?'Dừng connector (giả lập sự cố)':'Chạy lại connector';
+  const nb=$('#p9-note');
+  if(on){nb.className='note good';nb.innerHTML='Connector đọc WAL tới đâu thì slot cho phép Postgres dọn WAL tới đó. Mọi thay đổi chảy ra consumer gần như realtime mà app không phải sửa gì.'}
+  else if(wal>=100){nb.className='note bad';nb.innerHTML='Đĩa chứa WAL đã đầy. Postgres không ghi được log mới nên có thể dừng nhận ghi, ảnh hưởng cả app chính. Đây là sự cố CDC kinh điển nhất.'}
+  else{nb.className='note warn';nb.innerHTML='Connector đã dừng nhưng replication slot vẫn còn, nên Postgres phải giữ lại mọi WAL chờ nó. Lượng WAL bị giữ đang tăng.'}
+ };
+ $('#p9-btn').onclick=()=>{on=!on;clearInterval(timer);
+  if(on){wal=8}else{timer=setInterval(()=>{wal=Math.min(100,wal+.8);draw();if(wal>=100)clearInterval(timer)},150)}
+  draw()};
+ draw();
+}
+
+/* ---------- 10. consistent hashing ---------- */
+function init10(){
+ const NODES='ABCDEFGH',C=['#0B7A85','#E08A00','#7C4DFF','#D6336C','#2F9E44','#1C7ED6','#C2410C','#6B7280'],K=400;
+ const h32=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}h^=h>>>16;h=Math.imul(h,0x85ebca6b);h^=h>>>13;h=Math.imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0};
+ const assign=(n,vn)=>{
+  const ring=[];for(let i=0;i<n;i++)for(let v=0;v<vn;v++)ring.push([h32(NODES[i]+'#'+v),i]);
+  ring.sort((a,b)=>a[0]-b[0]);
+  const keys=[],cons=[],mod=[];
+  for(let k=0;k<K;k++){const h=h32('user:'+k);keys.push(h);let lo=0,hi=ring.length;while(lo<hi){const m=(lo+hi)>>1;if(ring[m][0]<h)lo=m+1;else hi=m}cons.push(ring[lo%ring.length][1]);mod.push(h%n)}
+  return{ring,keys,cons,mod};
+ };
+ let n=4,last='';
+ const draw=()=>{
+  const vn=+$('#p10-v').value,a=assign(n,vn),ang=h=>h/4294967296*2*Math.PI-Math.PI/2;
+  let s='<circle cx="160" cy="160" r="128" fill="none" stroke="var(--line)" stroke-width="2"/>';
+  a.keys.forEach((h,i)=>{const t=ang(h);s+=`<circle cx="${(160+104*Math.cos(t)).toFixed(1)}" cy="${(160+104*Math.sin(t)).toFixed(1)}" r="2.4" fill="${C[a.cons[i]]}" opacity=".85"/>`});
+  a.ring.forEach(([h,ni])=>{const t=ang(h);s+=`<circle cx="${(160+128*Math.cos(t)).toFixed(1)}" cy="${(160+128*Math.sin(t)).toFixed(1)}" r="${vn>20?2.6:5.5}" fill="${C[ni]}" stroke="var(--surface)" stroke-width="1.5"/>`});
+  s+=`<text x="160" y="154" text-anchor="middle" style="fill:var(--ink);font-weight:600;font-size:14px">${n} node</text><text x="160" y="172" text-anchor="middle">${vn} virtual node mỗi node</text><text x="160" y="190" text-anchor="middle">${K} key (chấm nhỏ)</text>`;
+  $('#p10-svg').innerHTML=s;
+  const cnt=new Array(n).fill(0);a.cons.forEach(o=>cnt[o]++);
+  $('#p10-bars').innerHTML=cnt.map((c,i)=>`<div class="bar"><b style="color:${C[i]}">${NODES[i]}</b><span style="width:${c/Math.max(...cnt)*100}%;background:${C[i]}"></span><em>${c} (${fmt(c/K*100,0)}%)</em></div>`).join('');
+  const nb=$('#p10-note');nb.className='note'+(last?' good':'');
+  nb.innerHTML=(last||'Bấm <b>+ Thêm node</b> và xem có bao nhiêu key phải đổi chỗ, rồi so với cách <code>hash % N</code>.')+`<br>Node nặng nhất giữ ${fmt(Math.max(...cnt)/K*100,0)}% key, nhẹ nhất ${fmt(Math.min(...cnt)/K*100,0)}% (lý tưởng ${fmt(100/n,0)}%). ${vn<10?'Ít virtual node nên phân phối còn lệch: hãy kéo thanh trượt lên.':'Nhiều virtual node giúp phân phối đều.'}`;
+ };
+ const change=dn=>{
+  const vn=+$('#p10-v').value,o=assign(n,vn),m=n+dn;if(m<2||m>8)return;const w=assign(m,vn);let mc=0,mm=0;
+  for(let i=0;i<K;i++){if(o.cons[i]!==w.cons[i])mc++;if(o.mod[i]!==w.mod[i])mm++}
+  last=`<b>${n} → ${m} node.</b> Consistent hashing chuyển <b>${fmt(mc/K*100,0)}%</b> key (lý thuyết khoảng ${fmt(100/Math.max(n,m),0)}%). Hash % N chuyển <b>${fmt(mm/K*100,0)}%</b> key, tức gần như cả cache bị xoá.`;
+  n=m;draw();
+ };
+ $('#p10-add').onclick=()=>change(1);$('#p10-del').onclick=()=>change(-1);
+ $('#p10-v').addEventListener('input',()=>{$('#p10-v-o').textContent=$('#p10-v').value;last='';draw()});
+ draw();
+}
+
+/* ---------- nội dung các mục ---------- */
+const S=[
+{id:'p99',nav:'p99 latency',t:'p99 latency: vì sao trung bình nói dối',init:init1,
+ lead:'Senior nói: "Đừng cho tôi xem trung bình." Trung bình trộn người may mắn với người xui xẻo thành một con số mà không ai thực sự trải nghiệm.',
+ why:['Bạn đọc được dashboard và hiểu "trung bình 80ms" không có nghĩa là user ổn. Bạn báo cáo bằng p50/p95/p99 thay vì "nhanh" hay "chậm", và đó là lúc đồng đội bắt đầu tin số liệu của bạn.',
+  'Bạn đặt được SLO (ví dụ p99 dưới 300ms), gắn histogram vào Express và tìm đúng endpoint kéo p99 lên thay vì đoán. Bạn biết percentile không cộng hay lấy trung bình được giữa các instance.',
+  'Bạn bảo vệ quyết định kỹ thuật bằng số liệu trước PM và CTO. Khi review PR bạn hỏi được "p99 trước và sau thay đổi này là bao nhiêu?", và đó là dấu hiệu của người dẫn dắt.',
+  'Đây là ngôn ngữ chung của SRE, capacity planning và SLA. Mọi mục còn lại trong trang này đều phải đo bằng nó, nên nó là nền móng. Freelancer dùng nó để chốt SLA và chứng minh giá trị của công việc tối ưu.'],
+ w:`<div class="ctls">${ctl('p1-p','Tỉ lệ request rơi vào đuôi chậm',0,10,2,.5,'%')}${ctl('p1-f','Đuôi chậm gấp bao nhiêu lần bình thường',5,60,20,1,'×')}</div><svg id="p1-svg" viewBox="0 0 640 230" role="img" aria-label="Biểu đồ phân bố latency"></svg><div class="stats" id="p1-stats"></div><div class="note" id="p1-note"></div>`,
+ cl:'Express + prom-client: đo bằng histogram, tính percentile ở Prometheus',
+ pit:['Lấy trung bình p99 của nhiều instance: sai. Percentile không cộng được, phải gộp bucket của histogram rồi mới tính quantile.','Chỉ đo trong handler: bỏ sót thời gian chờ event loop và chờ pool. Hãy đo cả ở load balancer.','Label bằng URL thô (<code>/users/123</code>) làm nổ cardinality. Dùng route pattern (<code>/users/:id</code>).','Bucket không bao quanh SLO sẽ cho p99 xấp xỉ rất thô.'],
+ lab:'Chạy <code>npx autocannon -c 50 -d 20 http://localhost:3000/api/orders</code> và đọc bảng latency (có 50%, 97.5%, 99%). Sau đó thêm <code>await sleep(2000)</code> ngẫu nhiên cho 2% request và so sánh mức trung bình với p99.',
+ q:[['Endpoint có trung bình 80ms nhưng user vẫn kêu chậm. Ba việc đầu tiên bạn kiểm tra?','Xem p95/p99 theo từng route, xem histogram có đuôi dài không, rồi tách theo user/tenant/tham số để tìm nhóm request chậm.'],['Vì sao không lấy trung bình p99 của 5 instance?','Percentile không phải đại lượng cộng được. Phải gộp các bucket của histogram từ mọi instance rồi tính quantile trên tổng.']]},
+
+{id:'pool',nav:'Connection pooling',t:'Connection pooling: nhóm connection là tài nguyên hữu hạn',init:init2,
+ lead:'Mở một connection Postgres khá đắt vì mỗi connection là một process backend. Pool giữ sẵn một nhóm nhỏ và cho request xếp hàng mượn. Pool quá nhỏ thì xếp hàng, quá lớn thì đè chết DB.',
+ why:['Bạn tránh được sự cố production đầu tiên mà gần như ai cũng gặp: <code>too many clients</code> hoặc timeout sau khi deploy thêm instance. Bạn hiểu pool là tài nguyên hữu hạn chứ không phải phép màu.',
+  'Bạn tính được kích thước pool, hiểu vai trò của PgBouncer và môi trường serverless, đọc được metric pool để phân biệt "DB chậm" với "đang xếp hàng chờ connection".',
+  'Bạn làm bài toán capacity: số instance × pool so với max_connections, và cấu hình autoscaling sao cho không tự giết database của mình.',
+  'Nguyên lý "tài nguyên có giới hạn + hàng đợi" lặp lại ở thread pool, HTTP agent, worker và Redis. Học một lần, dùng ở mọi hệ thống bạn chạm vào sau này.'],
+ w:`<div class="ctls">${ctl('p2-l','Request tới (req/s)',5,80,30)}${ctl('p2-s','Thời gian giữ connection mỗi query (ms)',10,300,100,5)}${ctl('p2-c','Kích thước pool',1,30,5)}</div><div class="pool" id="p2-pool"></div><svg id="p2-svg" viewBox="0 0 640 150"></svg><div class="stats" id="p2-stats"></div><div class="note" id="p2-note"></div><h4>Bài toán thật: scale instance mà DB không gánh nổi</h4><div class="ctls">${ctl('p2-n','Số instance app',1,30,6)}${ctl('p2-m','Pool max mỗi instance',1,30,10)}</div><svg id="p2b-svg" viewBox="0 0 640 74"></svg><div class="note" id="p2b-note"></div>`,
+ cl:'node-postgres: pool có timeout rõ ràng, kèm ghi chú cho Prisma',
+ pit:['Nhân số instance với pool rồi quên mất khi autoscale hay khi mỗi function serverless mở một pool riêng.','Không đặt <code>connectionTimeoutMillis</code>: request treo vô hạn thay vì lỗi nhanh.','Giữ connection trong lúc <code>await</code> gọi API ngoài bên trong transaction: pool cạn dù DB đang rảnh.','Cho rằng pool lớn hơn thì nhanh hơn. Điểm tối ưu thường chỉ vài chục connection cho một DB cỡ nhỏ.'],
+ lab:'Đặt <code>max: 2</code>, bắn <code>autocannon -c 50</code> và quan sát <code>pool.waitingCount</code> cùng lỗi <code>timeout exceeded when trying to connect</code>. Tăng dần pool và xem p99 thay đổi ở điểm nào thì không cải thiện nữa.',
+ q:[['6 instance × pool 20, max_connections = 100. Chuyện gì xảy ra khi autoscale lên 8 instance?','Tổng 160 vượt 100 nên instance mới nhận lỗi too many clients. Giảm pool, thêm PgBouncer hoặc giới hạn maxReplicas.']]},
+
+{id:'explain',nav:'EXPLAIN ANALYZE',t:'Đọc query plan với EXPLAIN ANALYZE',init:init3,
+ lead:'EXPLAIN cho biết Postgres định làm gì. ANALYZE cho biết nó thực sự làm gì và mất bao lâu. Đừng đoán index, hãy đọc plan.',
+ why:['Bạn dừng thói quen "thêm index cho chắc". Bạn biết query chậm vì Seq Scan và đọc được ba con số: rows, actual time, buffers.',
+  'Bạn tự sửa slow query trước khi hỏi senior. Bạn hiểu vì sao ORM như Prisma sinh ra query chậm (N+1, lấy thừa cột) và khi nào nên viết SQL thô.',
+  'Bạn review được schema và index design, hiểu planner dựa vào thống kê nên plan đổi khi dữ liệu lớn lên. Bạn tối ưu query trước khi xin thêm hạ tầng.',
+  'Framework thay đổi liên tục nhưng SQL và planner thì ổn định hàng chục năm, nên đây là kỹ năng giữ giá trị lâu nhất trong stack. Một index đúng có thể tiết kiệm tiền hạ tầng thật.'],
+ w:`<p style="margin:0 0 10px;font-size:14.5px">Bấm từng dòng của plan để xem ý nghĩa. Số liệu minh hoạ cho bảng <code>orders</code> 2 triệu dòng.</p><div class="btns"><button class="btn primary" id="p3-ta">Chưa có index (413 ms)</button><button class="btn" id="p3-tb">Có index đúng (0,12 ms)</button></div><div class="split"><div class="plan" id="p3-plan"></div><div class="note" id="p3-note"></div></div><div class="scroll"><table class="tbl"><tr><th>Triệu chứng trong plan</th><th>Thường nghĩa là</th><th>Thử trước tiên</th></tr><tr><td>Seq Scan trên bảng lớn, Rows Removed by Filter rất lớn</td><td>Thiếu index cho cột lọc</td><td>Thêm index đúng cột và đúng thứ tự cột</td></tr><tr><td>rows ước lượng lệch thực tế trên 10 lần</td><td>Thống kê cũ hoặc điều kiện tương quan</td><td><code>ANALYZE</code> bảng, xem lại điều kiện</td></tr><tr><td>Nested Loop với loops lên hàng nghìn</td><td>N+1 hoặc join thiếu index ở bảng trong</td><td>Index cột join, gộp query</td></tr><tr><td>Sort Method: external merge Disk</td><td>Sort tràn ra đĩa</td><td>Index có thứ tự, giảm dữ liệu, cân nhắc work_mem</td></tr><tr><td>Buffers read cao</td><td>Đọc quá nhiều page từ đĩa</td><td>Giảm số dòng phải quét, kiểm tra index</td></tr></table></div>`,
+ cl:'SQL: đọc plan, tạo index đúng thứ tự cột, an toàn khi EXPLAIN lệnh ghi',
+ pit:['Đọc <code>cost</code> như thời gian. Hãy so sánh <code>actual time</code>.','Chạy <code>EXPLAIN ANALYZE</code> trên lệnh ghi mà không bọc transaction: lệnh được thực thi thật.','Thêm index theo cảm tính. Mỗi index là thuế trên mọi lần ghi (xem mục Write amplification).','Test trên DB dev 100 dòng: planner chọn Seq Scan là đúng ở đó. Chỉ dữ liệu giống production mới có ý nghĩa.'],
+ lab:'Tạo 2 triệu dòng: <code>INSERT INTO orders(user_id, created_at, total) SELECT (random()*10000)::int, now()-random()*interval \'365 days\', random()*100 FROM generate_series(1,2000000);</code> rồi chạy EXPLAIN trước và sau khi tạo index.',
+ q:[['Seq Scan có phải lúc nào cũng xấu?','Không. Bảng nhỏ, hoặc query lấy phần lớn bảng, thì Seq Scan nhanh hơn dùng index. Nó chỉ đáng ngờ khi bảng lớn mà chỉ lấy ít dòng (Rows Removed by Filter rất lớn).']]},
+
+{id:'wamp',nav:'Write amplification',t:'Write amplification: một UPDATE không phải một lần ghi',init:init4,
+ lead:'Ở tầng code, một UPDATE là một câu lệnh. Ở tầng đĩa, mỗi index, mỗi bản ghi WAL và mỗi dead tuple là một lần ghi thêm.',
+ why:['Bạn hiểu "thêm index" không miễn phí: INSERT và UPDATE chậm dần khi bảng có nhiều index. Bạn ngừng thêm index cho mọi cột.',
+  'Bạn audit được index không dùng, tránh index trên cột hay đổi, hiểu bloat, vacuum và HOT update ở mức cơ bản, biết dùng batch và <code>COPY</code> cho ghi hàng loạt.',
+  'Bạn quyết định được schema cho bảng ghi nhiều (counter, event, log), biết khi nào cần partition hoặc tách dữ liệu nóng và lạnh, và hiểu WAL ảnh hưởng tới replica lag và chi phí backup.',
+  'Mọi storage engine (B-tree, LSM) đều đánh đổi giữa đọc, ghi và dung lượng. Hiểu Postgres ở mức này giúp bạn tiếp cận Cassandra, RocksDB, Kafka nhanh hơn, và là điểm phân biệt người "dùng DB" với người "hiểu DB".'],
+ w:`<div class="ctls">${ctl('p4-i','Số index trên bảng',0,10,4)}${ctl('p4-r','UPDATE mỗi giây',100,10000,2000,100)}<label class="chk"><input type="checkbox" id="p4-c" checked> Cột bị sửa nằm trong một index</label></div><div id="p4-vis"></div><div class="stats" id="p4-stats"></div><div class="note" id="p4-note"></div>`,
+ cl:'SQL: tìm index thừa, đo tỉ lệ HOT, chừa chỗ cho HOT',
+ pit:['Thêm index "cho chắc". Mỗi index là thuế trên mọi lần ghi.','Để cột hay đổi (<code>updated_at</code>, <code>last_seen</code>, counter) nằm trong index: mất HOT update.','Dùng bảng counter bị UPDATE liên tục: dead tuple và bloat. Cân nhắc ghi dạng append rồi gộp theo lô.','Quên rằng replica và backup cũng phải xử lý toàn bộ lượng WAL này.'],
+ lab:'Tạo bảng 1 triệu dòng với 8 index, đo thời gian UPDATE 100.000 dòng. Xoá bớt index rồi đo lại, đồng thời xem <code>n_tup_hot_upd</code> trong <code>pg_stat_user_tables</code>.',
+ q:[['Bảng users có 6 index, bạn UPDATE last_seen_at (đang nằm trong một index) mỗi lần user gọi API. Vấn đề là gì?','Mỗi UPDATE không HOT được nên phải ghi vào cả 6 index và sinh nhiều WAL. Gỡ index khỏi cột hay đổi, hoặc gom ghi theo lô (ví dụ đệm trong Redis rồi flush định kỳ).']]},
+
+{id:'bp',nav:'Backpressure',t:'Backpressure: hệ thống phải biết nói "không"',init:init5,
+ lead:'Khi producer nhanh hơn consumer thì có thứ phải nhường: hoặc bạn chủ động từ chối, hoặc RAM từ chối thay bạn bằng một cú OOM.',
+ why:['Bạn hiểu vì sao Node đột ngột OOM khi đọc stream lớn hoặc khi queue không có giới hạn, và biết dùng <code>pipeline</code> cùng sự kiện <code>drain</code>.',
+  'Bạn thiết kế được giới hạn concurrency, hàng đợi có giới hạn, và trả 429/503 kèm <code>Retry-After</code>. Bạn biết retry phải có backoff và jitter để không tạo bão retry.',
+  'Bạn thiết kế hệ thống suy giảm có kiểm soát khi traffic tăng đột biến hoặc dependency chậm, chặn được hiệu ứng domino lan giữa các service.',
+  'Tư duy "biết từ chối" là nền của rate limiting, load shedding và reliability engineering ở mọi quy mô, từ một server Express tới Kafka và hệ thống microservices.'],
+ w:`<div class="ctls">${ctl('p5-s','Tốc độ spike (req/s, từ giây 10 đến 30)',60,300,150,10)}${ctl('p5-c','Năng lực xử lý (req/s)',30,100,60,5)}</div><svg id="p5-svg" viewBox="0 0 640 220"></svg><div class="stats" id="p5-stats"></div><div class="note" id="p5-note"></div>`,
+ cl:'Express: giới hạn concurrency, hàng đợi có giới hạn, và stream có backpressure',
+ pit:['Queue không giới hạn "cho an toàn": thực chất chỉ chuyển lỗi sang RAM và latency vô hạn.','Vẫn xử lý request mà client đã bỏ đi. Hãy kiểm tra <code>AbortSignal</code> hoặc deadline.','Retry ngay lập tức và không có jitter: biến một đợt spike thành bão retry.','Chỉ giới hạn ở cửa vào, quên giới hạn ở dependency (DB, API ngoài).'],
+ lab:'Viết endpoint mất 200ms rồi bắn <code>autocannon -c 200</code>. So sánh hành vi (RAM, p99) khi chưa và khi đã giới hạn <code>pendingCount</code> với 429. Thử thêm <code>--expectBody</code> để thấy các lỗi.',
+ q:[['Thêm một queue ở giữa thì hệ thống hết quá tải đúng không?','Không. Queue không giới hạn chỉ che giấu vấn đề cho tới khi hết RAM, và làm latency tăng vô hạn. Cần giới hạn kích thước và từ chối hoặc loại bớt khi đầy.']]},
+
+{id:'tail',nav:'Tail latency',t:'Tail latency amplification: đuôi chậm nhân lên theo số lần gọi',init:init6,
+ lead:'Gọi một service chỉ 1% chậm thì chẳng sao. Gọi 50 service như vậy trong một request thì gần 40% request của bạn bị chậm.',
+ why:['Bạn hiểu vì sao endpoint gọi 5 service "mỗi cái đều nhanh" mà tổng vẫn chậm thất thường, và không còn đổ lỗi cho "mạng không ổn".',
+  'Bạn giảm được fan-out, đặt timeout và deadline cho từng call, dùng <code>Promise.all</code> có kiểm soát, cache, và quyết định phần dữ liệu nào được phép thiếu.',
+  'Bạn áp dụng được hedged request (cẩn thận chỉ với thao tác idempotent), chia ngân sách latency cho từng hop, và thiết kế lớp tổng hợp (BFF) hợp lý.',
+  'Quy luật xác suất này đúng ở mọi hệ phân tán. Hiểu nó giúp bạn phản biện kiến trúc nhiều hop trước khi cả đội tốn công xây, một kỹ năng có giá trị rất cao ở cấp senior.'],
+ w:`<div class="ctls">${ctl('p6-n','Số call trong một request',1,100,20)}${ctl('p6-p','Xác suất mỗi call bị chậm',.1,5,1,.1,'%')}</div><svg id="p6-svg" viewBox="0 0 640 190" role="img" aria-label="Xác suất dính ít nhất một call chậm theo số call"></svg><div class="stats" id="p6-stats"></div><div class="note" id="p6-note"></div>`,
+ cl:'Fan-out có deadline cho từng call và có dữ liệu phụ để suy giảm',
+ pit:['Gọi tuần tự các call độc lập (10 call × 100ms = 1 giây). Hãy chạy song song, nhưng nhớ mỗi call song song cũng chiếm một connection.','Không đặt timeout: một call chậm giữ cả request.','Retry hoặc hedge thao tác không idempotent, tạo side effect trùng (xem mục Idempotency key).','Tin rằng "mỗi service đạt SLO là đủ". SLO của cả request gần như là tích của chúng.'],
+ lab:'Viết 3 mock service, mỗi service trả 10ms trong 99% trường hợp và 500ms trong 1%. Gọi song song 1, 5 và 20 service, đo p99 của tổng bằng autocannon.',
+ q:[['Gọi 50 service, mỗi service nhanh trong 99% trường hợp. Xác suất cả request nhanh?','0,99^50 ≈ 60,5%, tức khoảng 39,5% request gặp ít nhất một call chậm.']]},
+
+{id:'idem',nav:'Idempotency key',t:'Idempotency key: retry mà không làm hai lần',init:init7,
+ lead:'Mạng sẽ rớt, client sẽ retry, user sẽ bấm đúp. Idempotency key biến hành động "gửi lại" thành một thao tác an toàn.',
+ why:['Bạn biết retry là chuyện chắc chắn xảy ra (timeout, double click), nên POST tạo đơn hoặc thanh toán không được phép tạo hai lần. Đây là lỗi mất tiền thật và mất niềm tin thật.',
+  'Bạn cài được middleware idempotency dựa trên unique constraint ở DB, và xử lý consumer theo kiểu at-least-once một cách an toàn.',
+  'Bạn thiết kế API và event retry-safe ngay từ đầu, bảo đảm webhook, job queue và consumer đều xử lý được bản trùng.',
+  'Trong hệ phân tán, "exactly-once" gần như chỉ là lý thuyết, còn idempotency là cách thực tế duy nhất. Fintech, e-commerce và mọi dự án freelance có thanh toán đều đòi hỏi kỹ năng này.'],
+ w:`<div class="ctls"><label class="chk"><input type="checkbox" id="p7-key"> Gửi kèm <code>Idempotency-Key</code></label><label class="chk"><input type="checkbox" id="p7-lost" checked> Response bị mất (client timeout rồi tự retry)</label></div><div class="btns"><button class="btn primary" id="p7-pay">Thanh toán 100k</button><button class="btn" id="p7-dbl">Double-click (2 request)</button><button class="btn" id="p7-rst">Làm lại</button></div><div class="stats"><div class="stat"><small>Số dư ví</small><strong id="p7-bal">1.000k</strong></div><div class="stat"><small>Số lần bị trừ (đúng ra chỉ 1)</small><strong id="p7-ch">0</strong></div></div><ul class="log" id="p7-log"></ul>`,
+ cl:'Prisma: unique key + hash của request để chặn xử lý trùng',
+ pit:['Không lưu hash của request: cùng key nhưng body khác vẫn chạy như bình thường. Phải trả 422.','Key kẹt ở trạng thái <code>processing</code> sau khi crash: cần cơ chế hết hạn hoặc phục hồi.','Chỉ dựa vào Redis có TTL ngắn: hết hạn rồi retry vẫn tạo bản trùng. Hãy dùng unique constraint ở DB.','Quên rằng GET, PUT, DELETE vốn đã idempotent theo HTTP. Chủ yếu POST (và có thể PATCH) mới cần key.'],
+ lab:'Gọi <code>curl -X POST -H "Idempotency-Key: abc" ...</code> hai lần liên tiếp và xác nhận DB chỉ có một bản ghi charge. Đổi body nhưng giữ nguyên key để thấy lỗi 422.',
+ q:[['Cùng một Idempotency-Key nhưng body khác nhau thì xử lý thế nào?','Trả 422. Key gắn với một request cụ thể (qua hash body). Dùng lại key cho nội dung khác là lỗi ở phía client.']]},
+
+{id:'outbox',nav:'Outbox pattern',t:'Outbox pattern: ghi DB và gửi event không bao giờ lệch',init:init8,
+ lead:'Ghi DB rồi gọi message broker là hai hệ thống khác nhau và không có transaction chung. Outbox ghi "ý định gửi event" vào cùng transaction với dữ liệu, rồi một worker gửi đi sau.',
+ why:['Bạn nhận ra kiểu code "lưu DB xong rồi gửi email hoặc event" có thể hỏng giữa chừng, và hiểu vì sao lỗi này hiếm gặp nhưng cực khó tái hiện.',
+  'Bạn cài được outbox cùng relay worker dùng <code>SKIP LOCKED</code>, và viết consumer idempotent để chịu được event gửi trùng.',
+  'Bạn thiết kế được luồng order, kho, thông báo nhất quán mà không cần distributed transaction, và chọn đúng giữa relay dạng polling với CDC.',
+  'Đây là cầu nối từ monolith sang event-driven và microservices. Hiểu "dual write problem" giúp bạn tránh cả một lớp bug mất dữ liệu âm thầm trong suốt sự nghiệp.'],
+ w:`<div class="radios"><label><input type="radio" name="p8" value="1" checked> Chạy bình thường</label><label><input type="radio" name="p8" value="2"> Process chết giữa hai bước</label><label><input type="radio" name="p8" value="3"> Lỗi ở bước thứ hai</label></div><div class="cols2"><div class="sc"><h4>Dual write (cách dễ sai)</h4><div id="p8-a"></div></div><div class="sc"><h4>Outbox (1 transaction + relay)</h4><div id="p8-b"></div></div></div>`,
+ cl:'Prisma: ghi order + outbox trong một transaction, relay dùng SKIP LOCKED',
+ pit:['Quên dọn bảng outbox (xoá hoặc partition các dòng đã gửi): bảng phình lên và chậm dần.','Relay giữ transaction quá lâu khi publish: dùng batch nhỏ và đặt timeout.','Giả định exactly-once. Outbox là at-least-once nên consumer bắt buộc phải idempotent (dùng <code>eventId</code>).','Thứ tự event giữa các aggregate có thể lệch khi chạy nhiều relay. Dùng <code>aggregateId</code> làm partition key khi cần thứ tự.'],
+ lab:'Thêm <code>process.exit(1)</code> giữa hai bước của cách dual write để thấy event mất. Sau đó chuyển sang outbox, chạy hai relay cùng lúc và xác nhận event không bị gửi trùng giữa hai relay nhờ <code>SKIP LOCKED</code>.',
+ q:[['Outbox có đảm bảo exactly-once không?','Không, nó đảm bảo at-least-once. Consumer phải khử trùng bằng eventId, vì relay có thể gửi lại sau khi chết ở giữa chừng.']]},
+
+{id:'cdc',nav:'Change data capture',t:'Change data capture: để log của Postgres tự kể lại mọi thay đổi',init:init9,
+ lead:'Thay vì để app tự báo cho mọi hệ thống, hãy đọc chính log ghi trước (WAL) của Postgres. Mọi INSERT, UPDATE, DELETE đã commit đều có trong đó.',
+ why:['Bạn chỉ cần biết khái niệm: database có một dòng log thay đổi có thể stream ra ngoài. Chưa cần vận hành, nhưng đủ để không đề xuất những giải pháp đồng bộ vụng về.',
+  'Bạn hiểu logical replication, replication slot và rủi ro WAL phình, dùng được CDC để đồng bộ search, cache hoặc audit mà không sửa code nghiệp vụ.',
+  'Bạn chọn đúng giữa CDC, polling và dual-write, vận hành được Debezium và Kafka, biết xử lý snapshot ban đầu và schema evolution.',
+  'Đồng bộ search, analytics, data warehouse và migration không downtime đều dựa trên CDC. Đây là cánh cửa mở sang data engineering và vai trò kiến trúc sư.'],
+ w:`<svg id="p9-svg" viewBox="0 0 760 160" role="img" aria-label="Luồng dữ liệu từ API qua Postgres, WAL, connector, Kafka tới consumer"></svg><div class="btns"><button class="btn primary" id="p9-btn">Dừng connector (giả lập sự cố)</button></div><div>WAL bị Postgres giữ lại trên đĩa</div><div class="meter"><i id="p9-fill"></i></div><div class="note" id="p9-note"></div><div class="scroll"><table class="tbl"><tr><th>Cách đưa thay đổi ra ngoài</th><th>Ưu điểm</th><th>Rủi ro</th></tr><tr><td>Dual write trong app</td><td>Đơn giản nhất</td><td>Dễ lệch, mất event (xem Outbox)</td></tr><tr><td>Polling theo <code>updated_at</code></td><td>Dễ vận hành, không cần quyền đặc biệt</td><td>Không thấy DELETE, tải thêm lên DB, độ trễ</td></tr><tr><td>CDC đọc WAL</td><td>Đủ mọi thay đổi theo đúng thứ tự, gần realtime</td><td>Vận hành phức tạp, slot có thể làm đầy đĩa</td></tr></table></div>`,
+ cl:'SQL: bật logical decoding, publication, và giám sát WAL bị giữ lại',
+ pit:['Bỏ quên replication slot: WAL chất đống đến đầy đĩa. Phải giám sát và đặt <code>max_slot_wal_keep_size</code>.','Quên snapshot ban đầu: consumer mới cần cả dữ liệu cũ chứ không chỉ các thay đổi mới.','Đổi tên hoặc xoá cột làm vỡ consumer. Schema của event là một hợp đồng.','Stream mọi bảng "cho tiện". Chỉ publish những bảng thật sự cần.'],
+ lab:'Bản nhẹ không cần Kafka: <code>SELECT pg_create_logical_replication_slot(\'lab\',\'test_decoding\');</code> rồi INSERT vài dòng và chạy <code>SELECT * FROM pg_logical_slot_get_changes(\'lab\', NULL, NULL);</code>. Xong nhớ <code>pg_drop_replication_slot(\'lab\')</code>.',
+ q:[['Replication slot nguy hiểm ở điểm nào?','Nếu consumer chết hoặc bị bỏ quên, Postgres vẫn giữ WAL chờ nó nên đĩa đầy dần. Cần giám sát pg_replication_slots và đặt giới hạn.']]},
+
+{id:'hash',nav:'Consistent hashing',t:'Consistent hashing: thêm node mà không xáo trộn cả hệ thống',init:init10,
+ lead:'Hash % N chia đều nhưng chỉ cần đổi N là gần như mọi key đổi chỗ. Consistent hashing chỉ di chuyển khoảng 1/N số key.',
+ why:['Bạn chỉ cần hiểu vì sao <code>hash % N</code> tệ khi N thay đổi. Đây thường là câu phỏng vấn nhưng vấn đề đằng sau là có thật.',
+  'Bạn hiểu cache sharding, sticky routing cho WebSocket, và phân biệt được với Redis Cluster (dùng 16.384 hash slot cố định, cùng mục đích nhưng khác thuật toán).',
+  'Bạn tham gia được thiết kế sharding và partitioning, chọn shard key để tránh hot partition, và ước lượng chi phí rebalance khi thêm bớt node.',
+  'Đây là vốn từ nền cho system design cấp senior và staff, lặp lại ở CDN, load balancer, database phân tán. Bạn ít khi tự viết nhưng phải hiểu để chọn đúng công cụ.'],
+ w:`<div class="ctls">${ctl('p10-v','Virtual node mỗi node',1,100,1)}</div><div class="btns"><button class="btn primary" id="p10-add">+ Thêm node</button><button class="btn" id="p10-del">− Bỏ node cuối</button></div><div class="split2"><svg id="p10-svg" viewBox="0 0 320 320" role="img" aria-label="Vòng hash với các node và key"></svg><div><div id="p10-bars"></div><div class="note" id="p10-note"></div></div></div>`,
+ cl:'TypeScript: hash ring tối giản có virtual node',
+ pit:['Tự viết rồi đưa lên production. Hãy dùng công cụ có sẵn, hiểu thuật toán để chọn đúng.','Quá ít virtual node làm phân phối lệch. Thường dùng vài chục đến vài trăm.','Shard key tệ vẫn tạo hot partition. Consistent hashing không cứu được một key quá nóng.','Nhầm với Redis Cluster hash slot: mục đích gần nhau nhưng không cùng cơ chế.'],
+ lab:'Cài class <code>Ring</code> ở trên, tạo 10.000 key, thêm một node và đếm số key đổi chủ. So sánh với <code>hash % N</code>. Thử vnodes = 1 và vnodes = 100 để thấy độ đều của phân phối.',
+ q:[['Vì sao hash % N tệ khi thêm node?','Khi N đổi, gần như mọi key rơi vào shard khác (khoảng N/(N+1) số key), nên cache bị xoá gần hết. Consistent hashing chỉ chuyển khoảng 1/(N+1) số key.']]}
+];
+
+/* ---------- dựng trang ---------- */
+const LAD=[['g','Đo và chẩn đoán database'],['p99',[2,3,3],'Ngôn ngữ chung để nói "nhanh" hay "chậm" bằng số liệu'],['pool',[2,3,3],'Sự cố production đầu tiên bạn gặp thường là cái này'],['explain',[2,3,3],'Kỹ năng bền nhất: SQL sống hàng chục năm'],['wamp',[1,2,3],'Phân biệt người dùng DB và người hiểu DB'],
+ ['g','Chịu tải'],['bp',[1,2,3],'Biết nói "không" để hệ thống không sập'],['tail',[1,2,3],'Khả năng phản biện kiến trúc nhiều hop'],
+ ['g','Dữ liệu đúng khi mọi thứ lỗi'],['idem',[2,3,3],'Retry là chắc chắn, trừ tiền hai lần là mất tiền'],['outbox',[1,2,3],'Dữ liệu và event không bao giờ lệch nhau'],['cdc',[0,1,2],'Nền của đồng bộ, analytics, migration'],
+ ['g','Scale ngang'],['hash',[1,1,2],'Vốn từ cho system design cấp senior']];
+const DL=['Chưa cần','Hiểu','Áp dụng','Thiết kế'];
+const byId=Object.fromEntries(S.map((s,i)=>[s.id,[s,i+1]]));
+$('#lad').innerHTML='<tr><th>Khái niệm</th><th>Năm 1</th><th>Năm 2–3</th><th>Năm 3–4</th><th>Lợi ích dài hạn</th></tr>'+LAD.map(r=>{
+ if(r[0]==='g')return`<tr class="g"><th colspan="5">${r[1]}</th></tr>`;
+ const [s,n]=byId[r[0]];
+ return`<tr><td><a href="#${s.id}">${n}. ${s.nav}</a></td>${r[1].map(d=>`<td class="d${d}">${d?'<span class="pips"><i></i><i></i><i></i></span> ':''}${DL[d]}</td>`).join('')}<td>${r[2]}</td></tr>`}).join('');
+$('#nav').insertAdjacentHTML('beforeend',S.map((s,i)=>`<a href="#${s.id}">${i+1}. ${s.nav}</a>`).join(''));
+const LV=['Năm 1','Năm 2–3','Năm 3–4','Về sau'];
+S.forEach((s,i)=>{
+ const code=esc($('#code-'+s.id).textContent.trim());
+ $('#main').insertAdjacentHTML('beforeend',`<section class="sec" id="${s.id}"><div class="wrap"><h2><span class="num">${i+1}</span><span>${s.t}</span></h2><p class="lead">${s.lead}</p>
+<h3>Vì sao cần vững ở từng giai đoạn</h3><div class="why">${LV.map((l,k)=>`<div class="row${k===3?' later':''}"><b>${l}</b><p>${s.why[k]}</p></div>`).join('')}</div>
+<h3>Nhìn nó chạy</h3><div class="card">${s.w}</div>
+<h3>Áp dụng trong PERN</h3><p class="codehead">${s.cl}</p><pre><code>${code}</code></pre>
+<div class="two"><div><h3>Sai lầm hay gặp</h3><ul>${s.pit.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h3>Lab 15 phút (Linux hoặc WSL2 đều chạy được)</h3><p>${s.lab}</p></div></div>
+<h3>Tự kiểm tra</h3>${s.q.map(x=>`<details class="q"><summary>${x[0]}</summary><p>${x[1]}</p></details>`).join('')}</div></section>`);
+ try{s.init()}catch(e){console.error(s.id,e)}
+});
+</script>
+</body>
+</html>
